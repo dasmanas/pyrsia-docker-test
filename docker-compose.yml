@@ -1,0 +1,41 @@
+version: "3.9"
+networks:
+  pyrsia-network:
+    external: false
+    name: pyrsia-network
+services:
+  build-pipeline-prototype:
+    build:
+      context: ./
+      dockerfile: build_pipeline_prototype/Dockerfile
+      args:
+        - RUST_VERSION=1.66.1
+    entrypoint: ["cargo", "run"]
+    networks:
+      - pyrsia-network
+    ports:
+      - "8080:8080"
+    container_name: build-pipeline-prototype
+  authorize-node:
+    image: pyrsiaoss/pyrsia-node:0.2.3-2805
+    environment:
+      RUST_LOG: "info,pyrsia=debug"
+    entrypoint: [ "pyrsia_node", "--pipeline-service-endpoint", "http://build-pipeline-prototype:8080", "--listen-only", "-H", "127.0.0.1", "-p", "7881", "--listen", "/ip4/127.0.0.1/tcp/44001", "--init-blockchain" ]
+    networks:
+      - pyrsia-network
+    ports:
+      - "7881:7881"
+      - "44001:44001"
+    container_name: authorize-node
+  peer-node:
+    image: pyrsiaoss/pyrsia-node:0.2.3-2805
+    environment:
+      RUST_LOG: "info,pyrsia=debug"
+    entrypoint: [ "pyrsia_node", "--bootstrap-url", "http://authorize-node:7881/status", "-H", "127.0.0.1", "-p", "7882", "--listen", "/ip4/127.0.0.1/tcp/44002" ]
+#    entrypoint: [ "pyrsia_node", "--bootstrap-url", "http://boot.pyrsia.link/status", "-H", "0.0.0.0", "-p", "7882", "--listen", "/ip4/0.0.0.0/tcp/44002" ]
+    networks:
+      - pyrsia-network
+    ports:
+      - "7882:7882"
+      - "44002:44002"
+    container_name: peer-node

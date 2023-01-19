@@ -1,0 +1,1 @@
+FROM pyrsiaoss/pyrsia-node:0.2.3-2805
