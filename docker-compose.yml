@@ -20,7 +20,7 @@ services:
     image: pyrsiaoss/pyrsia-node:0.2.3-2805
     environment:
       RUST_LOG: "info,pyrsia=debug"
-    entrypoint: [ "pyrsia_node", "--pipeline-service-endpoint", "http://build-pipeline-prototype:8080", "--listen-only", "-H", "127.0.0.1", "-p", "7881", "--listen", "/ip4/127.0.0.1/tcp/44001", "--init-blockchain" ]
+    entrypoint: [ "pyrsia_node", "--pipeline-service-endpoint", "http://build-pipeline-prototype:8080", "--listen-only", "-H", "0.0.0.0", "-p", "7881", "--listen", "/ip4/0.0.0.0/tcp/44001", "--init-blockchain" ]
     networks:
       - pyrsia-network
     ports:
@@ -31,7 +31,8 @@ services:
     image: pyrsiaoss/pyrsia-node:0.2.3-2805
     environment:
       RUST_LOG: "info,pyrsia=debug"
-    entrypoint: [ "pyrsia_node", "--bootstrap-url", "http://authorize-node:7881/status", "-H", "127.0.0.1", "-p", "7882", "--listen", "/ip4/127.0.0.1/tcp/44002" ]
+    entrypoint: [ "pyrsia_node", "--bootstrap-url", "http://authorize-node:7881/status", "-H", "0.0.0.0", "-p", "7882", "--listen", "/ip4/0.0.0.0/tcp/44002" ]
+#    The following entrypoint is to connect peer node to existing authorize node.
 #    entrypoint: [ "pyrsia_node", "--bootstrap-url", "http://boot.pyrsia.link/status", "-H", "0.0.0.0", "-p", "7882", "--listen", "/ip4/0.0.0.0/tcp/44002" ]
     networks:
       - pyrsia-network
